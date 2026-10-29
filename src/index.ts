@@ -33,6 +33,7 @@ export type Policy = string | Record<string, unknown> | null;
 export interface FunctionOptions {
   description?: string;
   policy?: Policy;
+  /** Seconds a call may take: it may only be shorter than the project's limit, which also caps memory and CPU. */
   timeout?: number;
   input_fields?: Record<string, unknown>[];
   tags?: string[];
@@ -223,11 +224,10 @@ export interface CorsConfig {
 export interface HttpFunctionConfig {
   description?: string;
   auth?: HttpAuth;
-  /** Seconds a request may run; capped by the installation (400 by default). */
+  /** Seconds a request may run. It may only be shorter than the project's limit; memory, CPU, body size and workers are the
+   * project's (set by whoever operates the installation), not the function's. */
   timeout?: number;
-  /** Heap limit of the function's workers, in MB; capped by the installation. */
-  memory?: number;
-  /** Workers kept running while idle, so a request never waits for a cold start. */
+  /** Workers kept running while idle, so a request never waits for a cold start (never more than the project allows). */
   warm?: number;
   /** Requests one worker serves at once before another is started. */
   concurrency?: number;
